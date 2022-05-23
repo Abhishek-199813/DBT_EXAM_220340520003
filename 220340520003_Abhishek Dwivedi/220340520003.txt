@@ -1,0 +1,161 @@
+create table DEPTSs(DETNO int primary key not null, 
+DNAME varchar(15) not null, 
+LOC varchar(10) not null);
+
+
+insert into DEPTSs values(10, "ACCOUNTING", "NEW YORK");
+insert into DEPTSs values(20, "RESEARCH", "DALLAS");
+insert into DEPTSs values(30, "SALES", "CHICAGO");
+insert into DEPTSs values(40, "OPERATIONS", "BOSTON");
+
+
+create table EMPSs(EMPNO int primary key not null,
+ENAME varchar(10) not null, 
+JOB varchar(9) not null, 
+HIREDATE date not null, 
+SAL float not null, 
+COMM float , 
+DETNO int , 
+foreign key(DETNO) references DEPTSs(DETNO));
+
+
+
+insert into EMPSs values(7839, "KING", "MANAGER", "1991-11-17",5000, NULL, 10);
+insert into EMPSs values(7698, "BLAKE", "CLERK", "1981-05-01",2850, NULL, 30);
+insert into EMPSs values(7782, "CLARK", "MANAGER", "1981-06-09",2450, NULL, 10);
+insert into EMPSs values(7566, "JONES", "CLERK", "1981-04-02",2975, NULL, 20);
+insert into EMPSs values(7654, "MARTIN", "SALESMAN", "1981-09-28",1250, 1400, 30);
+insert into EMPSs values(7499, "ALLEN", "SALESMAN", "1981-02-20",1600, 300, 30);
+
+
+select * from DEPTSs;
+select * from EMPSs;
+
+
+**********************************QUERIES***************************************
+
+1) select * from EMPSs where SAL >= 2500 && SAL <=5000;
+
+
+ '7566', 'JONES', 'CLERK', '1981-04-02', '2975', NULL, '20'
+'7698', 'BLAKE', 'CLERK', '1981-05-01', '2850', NULL, '30'
+'7839', 'KING', 'MANAGER', '1991-11-17', '5000', NULL, '10'
+
+
+2) select ENAME from EMPSs order by ENAME desc;
+
+'MARTIN'
+'KING'
+'JONES'
+'CLARK'
+'BLAKE'
+'ALLEN'
+
+3)select lower(JOB) from EMPSs ;
+
+'salesman'
+'clerk'
+'salesman'
+'clerk'
+'manager'
+'manager'
+
+4) select ENAME , length(ENAME) from EMPSs;
+
+'JONES', '5'
+'MARTIN', '6'
+'BLAKE', '5'
+'CLARK', '5'
+'KING', '4'
+
+5) select ENAME, (0.2*SAL) from EMPSs;
+
+'ALLEN', '320'
+'JONES', '595'
+'MARTIN', '250'
+'BLAKE', '570'
+'CLARK', '490'
+'KING', '1000'
+
+6) select LOCATE('AR',ENAME) from EMPSs;
+'0'
+'0'
+'2'
+'0'
+'3'
+'0'
+
+7)select e.ENAME, d.DNAME from EMPSs e join DEPTSs d on e.DETNO = d.DETNO;
+
+'ALLEN', 'SALES'
+'JONES', 'RESEARCH'
+'MARTIN', 'SALES'
+'BLAKE', 'SALES'
+'CLARK', 'ACCOUNTING'
+'KING', 'ACCOUNTING'
+
+
+
+8) select DETNO , count(*) from EMPSs group by DETNO;
+
+10	2
+20	1
+30	3
+
+
+
+9)  PROCEDURE
+
+delimiter //
+create procedure PROC1(string1 varchar(100), string2 varchar(100))
+begin
+declare msg varchar(100);
+declare num int;
+select LOCATE(string1,string2) into num;
+if num>0 then
+insert into tempp values(string1, string2, 'string 1 exists in string 2');
+else
+insert into tempp values(string1, string2, 'string 1 does not exists in string 2');
+end if;
+select * from tempp;
+end;//
+delimiter ;
+
+call PROC1('DAC','CDAC');
+
+
+========================= output =================================
+
+	string1	string2	msg
+	abhishek dwivedi	abhi	string 1 does not exists in string 2
+	abhishek dwivedi	abhishek	string 1 does not exists in string 2
+	abhishek dwivedi	abhishek dwivedi	string 1 exists in string 2
+	abhishek	abhishek dwivedi	string 1 exists in string 2
+	DAC	CDAC	string 1 exists in string 2
+
+
+10)
+
+delimiter //
+
+create function FUNC1(s1 int ,s2 int, s3 int) returns varchar(100)
+deterministic
+begin
+if s1+s2>s3 and s2+s3>s1 and s3+s1>s2 then
+return 'TRUE';
+else
+return 'FALSE';
+end if;
+end;//
+delimiter //
+
+===============================output================================
+
+select FUNC1(3,4,8);
+
+FALSE
+
+select FUNC1(3,4,3);
+
+TRUE
+
